@@ -57,9 +57,23 @@ nmap \t :YcmCompleter GetType<Enter>
 nmap \D <plug>(YCMHover)
 
 let g:codedark_transparent=1
-colorscheme codedark
 
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
 
+nmap <leader>sp :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
 
+
+augroup filetype_c
+    autocmd!
+    autocmd Filetype cpp colorscheme codedark
+    autocmd Filetype c   colorscheme codedark
+augroup end
+
+imap jj <Esc> 
