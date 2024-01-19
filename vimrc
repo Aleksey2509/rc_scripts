@@ -12,16 +12,14 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'ycm-core/YouCompleteMe'
 
-Plugin 'jeaye/color_coded'
-
 Plugin 'octol/vim-cpp-enhanced-highlight'
 
 Plugin 'rdnetto/YCM-Generator'
 
 Plugin 'tomasiser/vim-code-dark'
 
-call vundle#end()            
-filetype plugin indent on    
+call vundle#end()
+filetype plugin indent on
 
 set runtimepath-=~/.vim/bundle/vim-cpp-enhanced-highlight
 
@@ -52,11 +50,11 @@ set showmatch
 set comments=sl:/*,mb:\ *,elx:\ */
 
 let g:ycm_enable_semantic_highlighting=1
-let g:color_coded_enabled = 0
-let g:color_coded_filetypes = ['c', 'cpp', 'objc']
+let g:ycm_enable_inlay_hints=1
 
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
+nmap \D <plug>(YCMHover)
 
 let g:codedark_transparent=1
 colorscheme codedark
