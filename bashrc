@@ -116,27 +116,19 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export PATH=/home/lexotr/Desktop/gcc_reorder/aarch_gcc/bin:$PATH
-export PATH=/home/lexotr/.local/bin:$PATH
-export PATH=/usr/local/go/bin:$PATH
 export AARCH_GCC=aarch64-gcc-7
 export AARCH_PREFIX=aarch64-linux-gnu-
 export GCC_PLUGIN=/home/lexotr/Opt_odg/gcc_pho_pludin/plugin.so
 
-# tmux bind-key g run-shell "tmux show-buffer | xclip -selection clipboard"
+if [ -z "$ALREADY_SETUP" ]
+then
+    export ALREADY_SETUP=1
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/lexotr/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/lexotr/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/lexotr/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/lexotr/anaconda3/bin:$PATH"
-    fi
+    export PATH=/home/lexotr/Desktop/gcc_reorder/aarch_gcc/bin:$PATH
+    export PATH=/home/lexotr/.local/bin:$PATH
+    export PATH=/usr/local/go/bin:$PATH
+
+
 fi
-unset __conda_setup
-# <<< conda initialize <<<
+
 

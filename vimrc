@@ -21,7 +21,7 @@ Plugin 'tomasiser/vim-code-dark'
 call vundle#end()
 filetype plugin indent on
 
-set runtimepath-=~/.vim/bundle/vim-cpp-enhanced-highlight
+" set runtimepath-=~/.vim/bundle/vim-cpp-enhanced-highlight
 
 set enc=utf-8
 set fenc=utf-8
@@ -51,17 +51,22 @@ set comments=sl:/*,mb:\ *,elx:\ */
 
 let g:ycm_enable_semantic_highlighting=1
 let g:ycm_enable_inlay_hints=1
+let g:ycm_autoclose_preview_window_after_completion = 1
+" let g:cpp_experimental_simple_template_highlight = 1
+" let g:cpp_experimental_template_highlight = 1
 
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
-nmap \D <plug>(YCMHover)
+nmap \f :YcmCompleter FixIt<Enter>
+nmap \h <plug>(YCMHover)
 
 let g:codedark_transparent=1
 
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
 
-nmap <leader>sp :call <SID>SynStack()<CR>
+" nmap <leader>sp :call <SID>SynStack()<CR>
+nmap <F3> :call <SID>SynStack()<CR>
 function! <SID>SynStack()
   if !exists("*synstack")
     return
@@ -72,8 +77,10 @@ endfunc
 
 augroup filetype_c
     autocmd!
-    autocmd Filetype cpp colorscheme codedark
-    autocmd Filetype c   colorscheme codedark
+    autocmd Filetype cpp    colorscheme codedark
+    autocmd Filetype python colorscheme codedark
+    autocmd Filetype cuda   colorscheme codedark
+    autocmd Filetype c      colorscheme codedark
 augroup end
 
-imap jj <Esc> 
+imap jj <Esc>
