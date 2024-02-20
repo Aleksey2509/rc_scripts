@@ -10,6 +10,10 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+Plugin 'neoclide/coc.nvim'
+
+Plugin 'KarimElghamry/vim-auto-comment'
+
 Plugin 'ycm-core/YouCompleteMe'
 
 Plugin 'octol/vim-cpp-enhanced-highlight'
@@ -74,13 +78,29 @@ function! <SID>SynStack()
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 
+noremap ; l
+noremap l k
+noremap k j
+noremap j h
+
+let g:inline_comment_dict = {
+		\'//': ["js", "ts", "cpp", "cc", "hh", "h", "cu", "c", "dart"],
+		\'#': ['py', 'sh'],
+		\'"': ['vim'],
+		\}
+
 
 augroup filetype_c
     autocmd!
     autocmd Filetype cpp    colorscheme codedark
-    autocmd Filetype python colorscheme codedark
     autocmd Filetype cuda   colorscheme codedark
     autocmd Filetype c      colorscheme codedark
 augroup end
+
+augroup python_fl
+    autocmd!
+    autocmd Filetype python colorscheme codedark
+augroup end
+
 
 imap jj <Esc>
