@@ -21,6 +21,7 @@ Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'rdnetto/YCM-Generator'
 
 Plugin 'tomasiser/vim-code-dark'
+Plugin 'psf/black'
 
 call vundle#end()
 filetype plugin indent on
@@ -62,12 +63,11 @@ let g:ycm_autoclose_preview_window_after_completion = 1
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
 nmap \f :YcmCompleter FixIt<Enter>
+nmap \r :YcmCompleter GoToReferences<Enter>
 nmap \h <plug>(YCMHover)
 
-let g:codedark_transparent=1
+let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
-highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
 
 " nmap <leader>sp :call <SID>SynStack()<CR>
 nmap <F3> :call <SID>SynStack()<CR>
@@ -83,6 +83,10 @@ noremap l k
 noremap k j
 noremap j h
 
+imap jj <ESC>
+
+let g:codedark_transparent=1
+colorscheme codedark
 let g:inline_comment_dict = {
 		\'//': ["js", "ts", "cpp", "cc", "hh", "h", "cu", "c", "dart"],
 		\'#': ['py', 'sh'],
@@ -102,5 +106,6 @@ augroup python_fl
     autocmd Filetype python colorscheme codedark
 augroup end
 
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
 
-imap jj <Esc>
