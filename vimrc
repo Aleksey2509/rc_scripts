@@ -10,9 +10,11 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
-Plugin 'neoclide/coc.nvim'
+" Plugin 'neoclide/coc.nvim'
 
-Plugin 'KarimElghamry/vim-auto-comment'
+Plugin 'tpope/vim-surround'
+
+Plugin 'tmhedberg/SimpylFold'
 
 Plugin 'ycm-core/YouCompleteMe'
 
@@ -21,6 +23,9 @@ Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'rdnetto/YCM-Generator'
 
 Plugin 'tomasiser/vim-code-dark'
+
+Plugin 'KarimElghamry/vim-auto-comment'
+
 Plugin 'psf/black'
 
 call vundle#end()
@@ -35,6 +40,12 @@ set termencoding=utf-8
 set nocompatible
 " use indentation of previous line
 set autoindent
+" Enable folding
+" set foldmethod=indent
+" set foldlevel=99
+" let g:SimpylFold_docstring_preview=1
+
+
 " use intelligent indentation for C
 set smartindent
 " configure tabwidth and insert spaces instead of tabs
@@ -86,7 +97,6 @@ noremap j h
 imap jj <ESC>
 
 let g:codedark_transparent=1
-colorscheme codedark
 let g:inline_comment_dict = {
 		\'//': ["js", "ts", "cpp", "cc", "hh", "h", "cu", "c", "dart"],
 		\'#': ['py', 'sh'],
