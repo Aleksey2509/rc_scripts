@@ -99,7 +99,7 @@ noremap h ;
 imap jj <ESC>
 
 " key-mappings for comment line in normal mode
-nnoremap  <silent> <C-/> :call CommentUncommentLine()<CR>
+nnoremap  <silent> <C-_> :call CommentUncommentLine()<CR>
 " key-mappings for range comment lines in visual <Shift-V> mode
 " vnoremap <silent> <C-/> :call RangeCommentLine()<CR>
 
