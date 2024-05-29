@@ -90,12 +90,6 @@ function! <SID>SynStack()
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 
-noremap ; l
-noremap l k
-noremap k j
-noremap j h
-noremap h ;
-
 imap jj <ESC>
 
 " key-mappings for comment line in normal mode
