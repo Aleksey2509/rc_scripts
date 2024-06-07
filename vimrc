@@ -74,6 +74,7 @@ let g:ycm_autoclose_preview_window_after_completion = 1
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
 nmap \f :YcmCompleter FixIt<Enter>
+nmap \c :YcmCompleter Format<Enter>
 nmap \r :YcmCompleter GoToReferences<Enter>
 nmap \h <plug>(YCMHover)
 
