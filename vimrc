@@ -68,13 +68,13 @@ set comments=sl:/*,mb:\ *,elx:\ */
 let g:ycm_enable_semantic_highlighting=1
 let g:ycm_enable_inlay_hints=1
 let g:ycm_autoclose_preview_window_after_completion = 1
-" let g:cpp_experimental_simple_template_highlight = 1
-" let g:cpp_experimental_template_highlight = 1
 
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
 nmap \f :YcmCompleter FixIt<Enter>
 nmap \c :YcmCompleter Format<Enter>
+nmap \g <Plug>(YCMFindSymbolInDocument)
+nmap \G <Plug>(YCMFindSymbolInWorkspace)
 nmap \r :YcmCompleter GoToReferences<Enter>
 nmap \h <plug>(YCMHover)
 
@@ -92,11 +92,6 @@ function! <SID>SynStack()
 endfunc
 
 imap jj <ESC>
-
-" key-mappings for comment line in normal mode
-nnoremap  <silent> <C-_> :call CommentUncommentLine()<CR>
-" key-mappings for range comment lines in visual <Shift-V> mode
-" vnoremap <silent> <C-/> :call RangeCommentLine()<CR>
 
 let g:codedark_transparent=1
 let g:inline_comment_dict = {
