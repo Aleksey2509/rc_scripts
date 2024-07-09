@@ -10,28 +10,36 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
-" Plugin 'neoclide/coc.nvim'
+Plugin 'ryanoasis/vim-devicons'
 
 Plugin 'tpope/vim-surround'
 
-" Plugin 'tmhedberg/SimpylFold'
+Plugin 'tmhedberg/SimpylFold'
 
 Plugin 'ycm-core/YouCompleteMe'
 
 Plugin 'octol/vim-cpp-enhanced-highlight'
 
-Plugin 'rdnetto/YCM-Generator'
-
 Plugin 'tomasiser/vim-code-dark'
 
-" Plugin 'KarimElghamry/vim-auto-comment'
+Plugin 'KarimElghamry/vim-auto-comment'
 
 Plugin 'psf/black'
+
+Plugin 'preservim/nerdtree'
+
+Plugin 'lervag/vimtex'
 
 call vundle#end()
 filetype plugin indent on
 
-" set runtimepath-=~/.vim/bundle/vim-cpp-enhanced-highlight
+syntax on
+
+let g:vimtex_view_method = 'zathura'
+
+let g:vimtex_compiler_method = 'latexmk'
+
+set runtimepath-=~/.vim/bundle/vim-cpp-enhanced-highlight
 
 set enc=utf-8
 set fenc=utf-8
@@ -41,9 +49,9 @@ set nocompatible
 " use indentation of previous line
 set autoindent
 " Enable folding
-" set foldmethod=indent
-" set foldlevel=99
-" let g:SimpylFold_docstring_preview=1
+set foldmethod=indent
+set foldlevel=99
+let g:SimpylFold_docstring_preview=1
 
 
 " use intelligent indentation for C
@@ -56,7 +64,6 @@ set expandtab        " expand tabs to spaces
 " set textwidth=120
 " turn syntax highlighting on
 set t_Co=256
-syntax on
 " colorscheme wombat256
 " turn line numbers on
 set number
@@ -68,6 +75,8 @@ set comments=sl:/*,mb:\ *,elx:\ */
 let g:ycm_enable_semantic_highlighting=1
 let g:ycm_enable_inlay_hints=1
 let g:ycm_autoclose_preview_window_after_completion = 1
+" let g:cpp_experimental_template_highlight = 1
+
 
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
@@ -77,6 +86,18 @@ nmap \g <Plug>(YCMFindSymbolInDocument)
 nmap \G <Plug>(YCMFindSymbolInWorkspace)
 nmap \r :YcmCompleter GoToReferences<Enter>
 nmap \h <plug>(YCMHover)
+nnoremap <silent> <localleader>S <Plug>(YCMToggleInlayHints)
+
+
+" let g:ycm_language_server = [
+"   \   {
+"   \     'name': 'haskell-language-server',
+"   \     'cmdline': [ 'haskell-language-server-wrapper', '--lsp' ],
+"   \     'filetypes': [ 'haskell', 'lhaskell' ],
+"   \     'project_root_files': [ 'stack.yaml', 'cabal.project', 'package.yaml', 'hie.yaml' ],
+"   \   },
+"   \ ]
+
 
 let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
@@ -100,36 +121,20 @@ let g:inline_comment_dict = {
 		\'"': ['vim'],
 		\}
 
-colorscheme codedark
 
-" augroup filetype_c
-"     autocmd!
-"     autocmd Filetype cpp    colorscheme codedark
-"     autocmd Filetype cuda   colorscheme codedark
-"     autocmd Filetype c      colorscheme codedark
-" augroup end
-"
-" augroup python_fl
-"     autocmd!
-"     autocmd Filetype python colorscheme codedark
-" augroup end
+augroup filetype_c
+    autocmd!
+    autocmd Filetype cpp    colorscheme codedark
+    autocmd Filetype cuda   colorscheme codedark
+    autocmd Filetype c      colorscheme codedark
+    autocmd Filetype hs     colorscheme codedark
+augroup end
+
+augroup python_fl
+    autocmd!
+    autocmd Filetype python colorscheme codedark
+augroup end
 
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
-
-
-
-function! CommentUncommentLine()
-    let file_name = buffer_name("%")
-    let comment = '//'
-    let current_line = substitute(getline("."), '^[ ]*', '' , 'g')
-    " for .cpp or .hpp or .java or .C files use //
-    if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$' || file_name =~ '\.c$'
-        if(current_line[:len(comment) - 1] != comment)
-            execute ":silent! normal mm^i// \<ESC>`m3;"
-        else
-            execute ":silent! normal mm:nohlsearch\<CR>:s/\\/\\///\<CR>:nohlsearch\<CR>==`m3j"
-        endif
-    endif
-endfunction
 
