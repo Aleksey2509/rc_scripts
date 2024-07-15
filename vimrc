@@ -72,6 +72,8 @@ set showmatch
 " intelligent comments
 set comments=sl:/*,mb:\ *,elx:\ */
 
+set wildmenu
+
 let g:ycm_enable_semantic_highlighting=1
 let g:ycm_enable_inlay_hints=1
 let g:ycm_autoclose_preview_window_after_completion = 1
@@ -88,6 +90,12 @@ nmap \r :YcmCompleter GoToReferences<Enter>
 nmap \h <plug>(YCMHover)
 nnoremap <silent> <localleader>S <Plug>(YCMToggleInlayHints)
 
+hi darkModernGreen ctermfg=43
+hi def link cppOperator Function
+
+call prop_type_add( 'YCM_HL_namespace', { 'highlight': 'darkModernGreen' } )
+call prop_type_add( 'YCM_HL_class', { 'highlight': 'darkModernGreen' } )
+call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
 
 " let g:ycm_language_server = [
 "   \   {
