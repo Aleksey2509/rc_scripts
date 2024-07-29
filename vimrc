@@ -72,8 +72,6 @@ set showmatch
 " intelligent comments
 set comments=sl:/*,mb:\ *,elx:\ */
 
-set wildmenu
-
 let g:ycm_enable_semantic_highlighting=1
 let g:ycm_enable_inlay_hints=1
 let g:ycm_autoclose_preview_window_after_completion = 1
@@ -113,6 +111,8 @@ call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
 
 let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
+
+set wildmenu
 set scrolloff=5
 
 " nmap <leader>sp :call <SID>SynStack()<CR>
@@ -132,7 +132,6 @@ let g:inline_comment_dict = {
 		\'#': ['py', 'sh'],
 		\'"': ['vim'],
 		\}
-
 
 augroup filetype_c
     autocmd!
