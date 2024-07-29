@@ -79,6 +79,10 @@ let g:ycm_enable_inlay_hints=1
 let g:ycm_autoclose_preview_window_after_completion = 1
 " let g:cpp_experimental_template_highlight = 1
 
+let g:ycm_echo_current_diagnostic = 'virtual-text'
+let g:ycm_update_diagnostics_in_insert_mode=0
+let g:ycm_warning_symbol = '!#'
+" let g:ycm_show_diagnostics_ui = 0
 
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
