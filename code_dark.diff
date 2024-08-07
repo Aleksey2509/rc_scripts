@@ -1,0 +1,40 @@
+diff --git a/colors/codedark.vim b/colors/codedark.vim
+index 158a996..a8d6c4e 100644
+--- a/colors/codedark.vim
++++ b/colors/codedark.vim
+@@ -160,6 +160,8 @@ if g:codedark_conservative | let s:cdYellow = s:cdFront | endif
+ let s:cdPink = {'gui': '#C586C0', 'cterm': s:cterm0E, 'cterm256': '176'}
+ if g:codedark_conservative | let s:cdPink = s:cdBlue | endif
+ let s:cdSilver = {'gui': '#C0C0C0', 'cterm': s:cterm05, 'cterm256': '7'}
++let s:cdPurple = {'gui': '#CFCFCD', 'cterm': s:cterm06, 'cterm256': '104'}
++let s:cdFold = {'gui': '#CFCFCD', 'cterm': s:cterm06, 'cterm256': '245'}
+ 
+ " UI (built-in)
+ "    <sid>hi(GROUP, FOREGROUND, BACKGROUND, ATTRIBUTE, SPECIAL)
+@@ -176,7 +178,7 @@ call <sid>hi('DiffText', s:cdBack, s:cdDiffBlueLight, 'none', {})
+ call <sid>hi('EndOfBuffer', s:cdLineNumber, s:cdBack, 'none', {})
+ call <sid>hi('ErrorMsg', s:cdRed, s:cdBack, 'none', {})
+ call <sid>hi('VertSplit', s:cdSplitDark, s:cdBack, 'none', {})
+-call <sid>hi('Folded', s:cdLeftLight, s:cdLeftDark, 'underline', {})
++call <sid>hi('Folded', s:cdFold, s:cdLeftDark, 'none', {})
+ call <sid>hi('FoldColumn', s:cdLineNumber, s:cdBack, 'none', {})
+ call <sid>hi('SignColumn', {}, s:cdBack, 'none', {})
+ call <sid>hi('IncSearch', s:cdNone, s:cdSearchCurrent, 'none', {})
+@@ -247,7 +249,7 @@ call <sid>hi('Underlined', s:cdNone, {}, 'underline', {})
+ call <sid>hi("Conceal", s:cdFront, s:cdBack, 'none', {})
+ call <sid>hi('Ignore', s:cdBack, {}, 'none', {})
+ call <sid>hi('Error', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
+-call <sid>hi('Todo', s:cdNone, s:cdLeftMid, 'none', {})
++call <sid>hi('Todo', s:cdYellow, s:cdLeftMid, 'none', {})
+ call <sid>hi('SpellBad', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
+ call <sid>hi('SpellCap', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
+ call <sid>hi('SpellRare', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
+@@ -631,6 +633,8 @@ call <sid>hi('EnumDecl', s:cdBlueGreen, {}, 'none', {})
+ call <sid>hi('TemplateTypeParameter', s:cdBlueGreen, {}, 'none', {})
+ call <sid>hi('TypeAliasTemplateDecl', s:cdBlueGreen, {}, 'none', {})
+ call <sid>hi('ClassTemplate', s:cdBlueGreen, {}, 'none', {})
++call <sid>hi('darkModernGreen', s:cdBlueGreen, {}, 'none', {})
++call <sid>hi('yellowOrange', s:cdYellowOrange, {}, 'none', {})
+ call <sid>hi('ClassTemplatePartialSpecialization', s:cdBlueGreen, {}, 'none', {})
+ call <sid>hi('FunctionTemplate', s:cdBlueGreen, {}, 'none', {})
+ call <sid>hi('TemplateRef', s:cdBlueGreen, {}, 'none', {})
