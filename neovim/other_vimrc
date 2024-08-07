@@ -1,0 +1,199 @@
+set nocompatible              " be iMproved, required
+set cpoptions+=I
+
+filetype off                  " required
+"" set the runtime path to include Vundle and initialize
+""set rtp+=~/.vim/bundle/Vundle.vim
+"call vundle#begin()
+"" alternatively, pass a path where Vundle should install plugins
+""call vundle#begin('~/some/path/here')
+"
+"" let Vundle manage Vundle, required
+"Plugin 'VundleVim/Vundle.vim'
+"
+"" The following are examples of different formats supported.
+"" Keep Plugin commands between vundle#begin/end.
+"" plugin on GitHub repo
+""Plugin 'tpope/vim-fugitive'
+"" plugin from http://vim-scripts.org/vim/scripts.html
+"" Plugin 'L9'
+"" Git plugin not hosted on GitHub
+""Plugin 'git://git.wincent.com/command-t.git'
+"" git repos on your local machine (i.e. when working on your own plugin)
+"" Plugin 'file:///home/gmarik/path/to/plugin'
+"" The sparkup vim script is in a subdirectory of this repo called vim.
+"" Pass the path to set the runtimepath properly.
+""Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+"" Install L9 and avoid a Naming conflict if you've already installed a
+"" different version somewhere else.
+"" Plugin 'ascenator/L9', {'name': 'newL9'}
+""Plugin 'Konfekt/FastFold'
+""Plugin 'rust-lang/rust.vim'
+""Plugin 'felixhummel/setcolors.vim'
+"Plugin 'ycm-core/YouCompleteMe'
+"Plugin 'octol/vim-cpp-enhanced-highlight'
+""Plugin 'KarimElghamry/vim-auto-comment'
+"let g:black_use_virtualenv=1
+"let g:black_virtualenv = "/home/zakhar/.miniconda3"
+"Plugin 'psf/black'
+"Plugin 'vim-python/python-syntax'
+"let g:python_highlight_all = 1
+""Plugin 'SirVer/ultisnips'
+""Plugin 'honza/vim-snippets'
+"let g:UltiSnipsExpandTrigger = '<Tab>'
+"let g:UltiSnipsJumpForwardTrigger = '<Tab>'
+"let g:UltiSnipsJumpBackwardTrigger = ''
+"let g:UltiSnipsEditSplit = "vertical"
+"
+"let g:ycm_key_list_select_completion = ['<Enter>']
+"let g:ycm_key_list_previous_completion = []
+"let g:ycm_key_list_stop_completion = ['<C-y>']
+"let g:ycm_auto_trigger = 1
+"let g:ycm_filetype_blacklist = {'tex' : 1, 'gnuplot' : 1, 'text' : 1}
+"let g:ycm_auto_hover = ''
+"let g:ycm_extra_conf_globlist = ['~/gcc*/*', '~/gym/*', '~/gdyn/*', '~/MuAsm/*']
+""let g:ycm_autoclose_preview_window_after_completion = 1
+"let g:ycm_autoclose_preview_window_after_insertion = 1
+set completeopt=menu,popup
+"let g:ycm_rust_toolchain_root='/home/zakhar/.rustup/toolchains/1.67.0-x86_64-unknown-linux-gnu'
+"let g:ycm_rust_toolchain_root='/home/zakhar/.rustup/toolchains/stable-x86_64-unknown-linux-gnu'
+
+
+" let g:ycm_filter_diagnostics = {
+"     \ "rust":{
+"     \ "regex": [".+"]
+"     \}, 
+"     \ "cpp":{
+"     \ "regex": [".+"]
+"     \},
+"     \ "c":{
+"     \ "regex": [".+"]
+"     \}
+" \}
+" 
+" nmap \D <plug>(YCMHover)
+" nmap OQ :YcmCompleter GoTo<CR>
+" nmap OR <Plug>(YCMFindSymbolInWorkspace)
+" nmap OS :YcmCompleter GoToReferences<CR>
+" nmap \F :RustFmt<CR>
+" nmap \f :YcmCompleter Format<CR>
+
+nmap \hh :set hls!<CR>
+nmap \bb :!black %<CR>
+
+"Plugin 'flazz/vim-colorschemes'
+"Plugin 'tpope/vim-surround'
+
+"Plugin 'lervag/vimtex'
+" All of your Plugins must be added before the following line
+" call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+"
+let g:tex_flavor='latex'
+let g:vimtex_view_method='zathura'
+let g:vimtex_quickfix_mode=0
+let g:vimtex_syntax_enabled=1
+set conceallevel=1
+let g:tex_conceal='abdmgs'
+let g:vimtex_compiler_method = 'latexmk'
+let g:vimtex_compiler_latexmk = {'options' : ['-shell-escape', '-pdf', '-verbose', '-file-line-error', '-synctex=1', '-interaction=nonstopmode']}
+let g:vimtex_view_automatic=0
+let g:vimtex_quickfix_ignore_filters = ['Overfull \\hbox', 'Underfull \\hbox', 'Package ExtSizes Warning: It is better to use one of the extsizes classes']
+
+let g:cpp_no_function_highlight = 1
+
+nmap <F10> :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+      if !exists("*synstack")
+              return
+      endif
+      echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+
+function! SSCompileView()
+    :VimtexCompileSS
+    autocmd User VimtexEventCompileSuccess VimtexView
+endfunc
+
+"autocmd User VimtexEventCompileFailed silent !mv ./gnuplottex ./OLDgnuplottex
+"autocmd User VimtexEventCompileSuccess silent !mv ./gnuplottex ./OLDgnuplottex
+
+map \ss :call SSCompileView()<CR>
+
+"if empty(v:servername) && exists('*remote_startserver')
+"      call remote_startserver('VIM')
+"endif
+  
+imap jj <Esc>
+
+" Настройки табов для Python, согласно рекоммендациям
+set tabstop=4 
+set softtabstop=4
+set shiftwidth=4
+set smarttab
+" Автоотступ
+set autoindent
+" Подсвечиваем все что можно подсвечивать
+let python_highlight_all = 1
+" Включаем 256 цветов в терминале, мы ведь работаем из иксов?
+" Нужно во многих терминалах, например в gnome-terminal
+set t_Co=256
+
+":nnoremap <Leader>zz :let &scrolloff=15-&scrolloff<CR>
+set scrolloff=15
+
+
+syntax on "Включить подсветку синтаксиса
+syntax enable
+
+" set nu "Включаем нумерацию строк
+set mousehide "Спрятать курсор мыши когда набираем текст
+set termencoding=utf-8 "Кодировка терминала
+" Удобное поведение backspace
+set backspace=indent,eol,start whichwrap+=<,>,[,]
+" Вырубаем черточки на табах
+set showtabline=1
+set expandtab
+" Переносим на другую строчку, разрываем строки
+set wrap
+set linebreak
+
+set encoding=utf-8 " Кодировка файлов по умолчанию
+set fileencodings=utf8,cp1251
+
+set clipboard=unnamed
+set ruler
+set nu
+
+set foldmethod=syntax
+set foldnestmax=4
+autocmd InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
+autocmd InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
+
+autocmd InsertLeave *.md silent! s/\. /\.\r/g
+
+set listchars=tab:⍿·,trail:·
+autocmd Filetype c,cpp set comments^=:///
+
+command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+set cursorlineopt=number
+set cursorline
+
+colorscheme mink
