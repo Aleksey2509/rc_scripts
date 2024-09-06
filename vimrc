@@ -39,8 +39,6 @@ let g:vimtex_view_method = 'zathura'
 
 let g:vimtex_compiler_method = 'latexmk'
 
-set runtimepath-=~/.vim/bundle/vim-cpp-enhanced-highlight
-
 set enc=utf-8
 set fenc=utf-8
 set termencoding=utf-8
@@ -49,8 +47,7 @@ set nocompatible
 " use indentation of previous line
 set autoindent
 " Enable folding
-set foldmethod=indent
-set foldlevel=99
+set foldmethod=syntax
 let g:SimpylFold_docstring_preview=1
 
 
@@ -82,6 +79,7 @@ let g:ycm_update_diagnostics_in_insert_mode=0
 let g:ycm_warning_symbol = '!#'
 " let g:ycm_show_diagnostics_ui = 0
 
+nmap \v :call ToggleRelNumber()<Enter>
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
 nmap \f :YcmCompleter FixIt<Enter>
@@ -96,6 +94,7 @@ hi darkModernGreen ctermfg=43
 hi def link cppOperator Function
 
 call prop_type_add( 'YCM_HL_namespace', { 'highlight': 'darkModernGreen' } )
+call prop_type_add( 'YCM_HL_concept', { 'highlight': 'darkModernGreen' } )
 call prop_type_add( 'YCM_HL_class', { 'highlight': 'darkModernGreen' } )
 call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
 
@@ -111,7 +110,7 @@ call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
 
 let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
-
+set relativenumber
 set wildmenu
 set scrolloff=5
 
@@ -135,16 +134,30 @@ let g:inline_comment_dict = {
 
 augroup filetype_c
     autocmd!
-    autocmd Filetype cpp    colorscheme codedark
-    autocmd Filetype cuda   colorscheme codedark
-    autocmd Filetype c      colorscheme codedark
-    autocmd Filetype hs     colorscheme codedark
+    autocmd Filetype cpp    call SetKnownLanguagesOptions()
+    autocmd Filetype cuda   call SetKnownLanguagesOptions()
+    autocmd Filetype c      call SetKnownLanguagesOptions()
+    autocmd Filetype hs     call SetKnownLanguagesOptions()
 augroup end
 
 augroup python_fl
     autocmd!
-    autocmd Filetype python colorscheme codedark
+    autocmd Filetype python call SetKnownLanguagesOptions()
 augroup end
+
+function ToggleRelNumber()
+    let current = trim(execute('set relativenumber?'))
+    if current == "relativenumber"
+        :set norelativenumber
+    else
+        :set relativenumber
+    endif
+endfunction
+
+function SetKnownLanguagesOptions()
+        set cursorline
+        colorscheme codedark
+endfunction
 
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
