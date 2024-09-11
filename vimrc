@@ -111,6 +111,7 @@ call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
 let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
 set relativenumber
+set signcolumn=number
 set wildmenu
 set scrolloff=5
 
@@ -137,6 +138,7 @@ augroup filetype_c
     autocmd Filetype cpp    call SetKnownLanguagesOptions()
     autocmd Filetype cuda   call SetKnownLanguagesOptions()
     autocmd Filetype c      call SetKnownLanguagesOptions()
+    autocmd Filetype rust   call SetKnownLanguagesOptions()
     autocmd Filetype hs     call SetKnownLanguagesOptions()
 augroup end
 

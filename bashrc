@@ -116,6 +116,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
+export EDITOR=vim
 export AARCH_GCC=aarch64-gcc-7
 export AARCH_PREFIX=aarch64-linux-gnu-
 export GCC_PLUGIN=/home/lexotr/Opt_odg/gcc_pho_pludin/plugin.so
