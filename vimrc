@@ -14,6 +14,8 @@ Plugin 'ryanoasis/vim-devicons'
 
 Plugin 'tpope/vim-surround'
 
+Plugin 'tpope/vim-fugitive'
+
 Plugin 'tmhedberg/SimpylFold'
 
 Plugin 'ycm-core/YouCompleteMe'
@@ -50,6 +52,7 @@ set autoindent
 set foldmethod=syntax
 let g:SimpylFold_docstring_preview=1
 
+" set backspace=indent,eol,start
 
 " use intelligent indentation for C
 set smartindent
@@ -80,6 +83,7 @@ let g:ycm_warning_symbol = '!#'
 " let g:ycm_show_diagnostics_ui = 0
 
 nmap \v :call ToggleRelNumber()<Enter>
+nmap \s :call ToggleHl()<Enter>
 nmap \d :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
 nmap \f :YcmCompleter FixIt<Enter>
@@ -146,6 +150,16 @@ augroup python_fl
     autocmd!
     autocmd Filetype python call SetKnownLanguagesOptions()
 augroup end
+
+function ToggleHl()
+    let current = trim(execute('set hlsearch?'))
+    if current == "nohlsearch"
+        :set hlsearch
+    else
+        :set nohlsearch
+    endif
+endfunction
+
 
 function ToggleRelNumber()
     let current = trim(execute('set relativenumber?'))
