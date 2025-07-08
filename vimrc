@@ -93,15 +93,6 @@ nmap \G <Plug>(YCMFindSymbolInWorkspace)
 nmap \r :YcmCompleter GoToReferences<Enter>
 nmap \h <plug>(YCMHover)
 nnoremap <silent> <localleader>S <Plug>(YCMToggleInlayHints)
-
-hi darkModernGreen ctermfg=43
-hi def link cppOperator Function
-
-call prop_type_add( 'YCM_HL_namespace', { 'highlight': 'darkModernGreen' } )
-call prop_type_add( 'YCM_HL_concept', { 'highlight': 'darkModernGreen' } )
-call prop_type_add( 'YCM_HL_class', { 'highlight': 'darkModernGreen' } )
-call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
-
 " let g:ycm_language_server = [
 "   \   {
 "   \     'name': 'haskell-language-server',
@@ -111,6 +102,17 @@ call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
 "   \   },
 "   \ ]
 
+
+
+hi darkModernGreen ctermfg=43
+hi def link cppOperator Function
+
+call prop_type_add( 'YCM_HL_namespace', { 'highlight': 'darkModernGreen' } )
+call prop_type_add( 'YCM_HL_concept', { 'highlight': 'darkModernGreen' } )
+call prop_type_add( 'YCM_HL_class', { 'highlight': 'darkModernGreen' } )
+call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
+call prop_type_add( 'YCM_HL_label', { 'highlight': 'Macro' } )
+call prop_type_add( 'YCM_HL_formatSpecifier', { 'highlight': 'Special' } )
 
 let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
@@ -143,7 +145,7 @@ augroup filetype_c
     autocmd Filetype cuda   call SetKnownLanguagesOptions()
     autocmd Filetype c      call SetKnownLanguagesOptions()
     autocmd Filetype rust   call SetKnownLanguagesOptions()
-    autocmd Filetype hs     call SetKnownLanguagesOptions()
+    autocmd Filetype haskell   call SetKnownLanguagesOptions()
 augroup end
 
 augroup python_fl
