@@ -20,8 +20,6 @@ Plugin 'tmhedberg/SimpylFold'
 
 Plugin 'ycm-core/YouCompleteMe'
 
-Plugin 'octol/vim-cpp-enhanced-highlight'
-
 Plugin 'tomasiser/vim-code-dark'
 
 Plugin 'KarimElghamry/vim-auto-comment'
@@ -117,6 +115,7 @@ call prop_type_add( 'YCM_HL_formatSpecifier', { 'highlight': 'Special' } )
 let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
 set relativenumber
+set ruler
 set signcolumn=number
 set wildmenu
 set scrolloff=5
