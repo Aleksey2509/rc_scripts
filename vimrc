@@ -1,11 +1,9 @@
-set nocompatible              " be iMproved, required
-filetype off                  " required
+set nocompatible
+filetype off
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
@@ -20,7 +18,7 @@ Plugin 'tmhedberg/SimpylFold'
 
 Plugin 'ycm-core/YouCompleteMe'
 
-Plugin 'tomasiser/vim-code-dark'
+Plugin 'Aleksey2509/vim-code-dark-fork'
 
 Plugin 'KarimElghamry/vim-auto-comment'
 
@@ -42,43 +40,32 @@ let g:vimtex_compiler_method = 'latexmk'
 set enc=utf-8
 set fenc=utf-8
 set termencoding=utf-8
-" disable vi compatibility (emulation of old bugs)
-set nocompatible
-" use indentation of previous line
 set autoindent
-" Enable folding
 set foldmethod=syntax
 let g:SimpylFold_docstring_preview=1
 
 " set backspace=indent,eol,start
 
-" use intelligent indentation for C
 set smartindent
 " configure tabwidth and insert spaces instead of tabs
-set tabstop=4        " tab width is 4 spaces
-set shiftwidth=4     " indent also with 4 spaces
-set expandtab        " expand tabs to spaces
-" wrap lines at 120 chars. 80 is somewaht antiquated with nowadays displays.
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
 " set textwidth=120
-" turn syntax highlighting on
+
 set t_Co=256
-" colorscheme wombat256
-" turn line numbers on
 set number
-" highlight matching braces
 set showmatch
-" intelligent comments
 set comments=sl:/*,mb:\ *,elx:\ */
 
 let g:ycm_enable_semantic_highlighting=1
 let g:ycm_enable_inlay_hints=1
 let g:ycm_autoclose_preview_window_after_completion = 1
-" let g:cpp_experimental_template_highlight = 1
 
 let g:ycm_echo_current_diagnostic = 'virtual-text'
 let g:ycm_update_diagnostics_in_insert_mode=0
 let g:ycm_warning_symbol = '!#'
-" let g:ycm_show_diagnostics_ui = 0
 
 nmap \v :call ToggleRelNumber()<Enter>
 nmap \s :call ToggleHl()<Enter>
@@ -100,9 +87,8 @@ nnoremap <silent> <localleader>S <Plug>(YCMToggleInlayHints)
 "   \   },
 "   \ ]
 
-
-
 hi darkModernGreen ctermfg=43
+hi yellowOrange ctermfg=179
 hi def link cppOperator Function
 
 call prop_type_add( 'YCM_HL_namespace', { 'highlight': 'darkModernGreen' } )
@@ -111,8 +97,6 @@ call prop_type_add( 'YCM_HL_class', { 'highlight': 'darkModernGreen' } )
 call prop_type_add( 'YCM_HL_function', { 'highlight': 'Function' } )
 call prop_type_add( 'YCM_HL_label', { 'highlight': 'Macro' } )
 call prop_type_add( 'YCM_HL_formatSpecifier', { 'highlight': 'Special' } )
-
-let g:black_virtualenv = '/home/lexotr/miniconda3/envs/mipt_ml/'
 
 set relativenumber
 set ruler
@@ -178,4 +162,3 @@ endfunction
 
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
-
