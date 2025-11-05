@@ -18,6 +18,8 @@ Plugin 'tmhedberg/SimpylFold'
 
 Plugin 'ycm-core/YouCompleteMe'
 
+Plugin 'llvm/llvm.vim'
+Plugin 'modular/mojo.vim'
 Plugin 'Aleksey2509/vim-code-dark-fork'
 
 Plugin 'KarimElghamry/vim-auto-comment'
@@ -70,12 +72,14 @@ let g:ycm_warning_symbol = '!#'
 nmap \v :call ToggleRelNumber()<Enter>
 nmap \s :call ToggleHl()<Enter>
 nmap \d :YcmCompleter GoToDefinition<Enter>
+nmap \D :tab split \| :YcmCompleter GoToDefinition<Enter>
 nmap \t :YcmCompleter GetType<Enter>
 nmap \f :YcmCompleter FixIt<Enter>
 nmap \c :YcmCompleter Format<Enter>
 nmap \g <Plug>(YCMFindSymbolInDocument)
 nmap \G <Plug>(YCMFindSymbolInWorkspace)
 nmap \r :YcmCompleter GoToReferences<Enter>
+nmap \R :YcmCompleter RefactorRename 
 nmap \h <plug>(YCMHover)
 nnoremap <silent> <localleader>S <Plug>(YCMToggleInlayHints)
 " let g:ycm_language_server = [
@@ -129,6 +133,7 @@ augroup filetype_c
     autocmd Filetype c      call SetKnownLanguagesOptions()
     autocmd Filetype rust   call SetKnownLanguagesOptions()
     autocmd Filetype haskell   call SetKnownLanguagesOptions()
+    autocmd Filetype mojo   call SetKnownLanguagesOptions()
 augroup end
 
 augroup python_fl
