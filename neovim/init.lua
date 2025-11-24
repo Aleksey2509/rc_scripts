@@ -29,6 +29,7 @@ require("lazy").setup({
     -- Syntax highlighting
     { "nvim-treesitter/nvim-treesitter",  build = ":TSUpdate" },
 
+    { "tpope/vim-surround" },
     -- UI
     { "nvim-lualine/lualine.nvim" },
     { "Aleksey2509/vim-code-dark-fork" },
@@ -262,9 +263,13 @@ vim.api.nvim_set_hl(0, "darkModernGreen", { ctermfg = 43, fg = "#00AF5F" })
 vim.api.nvim_set_hl(0, "yellowOrange", { ctermfg = 179, fg = "#D7AF5F" })
 
 -- Link LSP semantic token types to highlight groups
-vim.api.nvim_set_hl(0, "@lsp.type.namespace", { link = "Macro" })
-vim.api.nvim_set_hl(0, "@lsp.type.concept", { link = "darkModernGreen" })
--- vim.api.nvim_set_hl(0, "@lsp.type.class",     { link = "darkModernGreen" })
+vim.api.nvim_set_hl(0, "@keyword", { link = "Macro" })
+vim.api.nvim_set_hl(0, "@keyword.modifier.cpp", { link = "Type" })
+vim.api.nvim_set_hl(0, "@keyword.type", { link = "Type" })
+vim.api.nvim_set_hl(0, "@keyword.operator.cpp", { link = "Macro" })
+vim.api.nvim_set_hl(0, "@lsp.type.concept", { link = "@type" })
+vim.api.nvim_set_hl(0, "@lsp.type.class", { link = "@type" })
+vim.api.nvim_set_hl(0, "@lsp.type.namespace", { link = "@type" })
 vim.api.nvim_set_hl(0, "@lsp.type.function", { link = "Function" })
 vim.api.nvim_set_hl(0, "@lsp.type.label", { link = "Macro" })
 vim.api.nvim_set_hl(0, "@lsp.type.operator", { link = "Function" })
