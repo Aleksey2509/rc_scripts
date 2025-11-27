@@ -24,6 +24,9 @@ require("lazy").setup({
     { "williamboman/mason-lspconfig.nvim" },
     { "hrsh7th/nvim-cmp" },
     { "hrsh7th/cmp-nvim-lsp" },
+    { "hrsh7th/cmp-buffer" },
+    { "hrsh7th/cmp-path" },
+    { "hrsh7th/cmp-nvim-lua" },
     { "L3MON4D3/LuaSnip" },
 
     -- Syntax highlighting
@@ -117,6 +120,7 @@ vim.api.nvim_create_autocmd("InsertEnter", {
     command = "match none"
 })
 
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -----------------------------------------------------------
 -- Colorscheme
@@ -126,6 +130,117 @@ vim.cmd([[colorscheme codedark]])
 -----------------------------------------------------------
 -- LSP setup
 -----------------------------------------------------------
+local hls_settings = {
+    haskell = {
+        cabalFormattingProvider = "cabal-gild",
+        checkParents = "CheckOnSave",
+        checkProject = true,
+        formattingProvider = "ormolu",
+        maxCompletions = 40,
+
+        plugin = {
+            ["alternateNumberFormat"] = { globalOn = true },
+
+            cabal = {
+                codeActionsOn = true,
+                completionOn = true,
+                diagnosticsOn = true,
+                hoverOn = true,
+                symbolsOn = true,
+            },
+
+            ["cabal-fmt"] = { config = { path = "cabal-fmt" } },
+            ["cabal-gild"] = { config = { path = "cabal-gild" } },
+            cabalHaskellIntegration = { globalOn = true },
+
+            callHierarchy = { globalOn = true },
+
+            class = { codeActionsOn = true, codeLensOn = true },
+
+            eval = {
+                config = { diff = true, exception = false },
+                globalOn = true,
+            },
+
+            ["explicit-fields"] = { codeActionsOn = true, inlayHintsOn = true },
+            ["explicit-fixity"] = { globalOn = true },
+
+            fourmolu = { config = { external = false, path = "fourmolu" } },
+            gadt = { globalOn = true },
+
+            ["ghcide-code-actions-bindings"] = { globalOn = true },
+            ["ghcide-code-actions-fill-holes"] = { globalOn = true },
+            ["ghcide-code-actions-imports-exports"] = { globalOn = true },
+            ["ghcide-code-actions-type-signatures"] = { globalOn = true },
+
+            ["ghcide-completions"] = {
+                config = { autoExtendOn = true, snippetsOn = true },
+                globalOn = true,
+            },
+
+            ["ghcide-hover-and-symbols"] = { hoverOn = true, symbolsOn = true },
+
+            ["ghcide-type-lenses"] = {
+                config = { mode = "always" },
+                globalOn = true,
+            },
+
+            hlint = {
+                codeActionsOn = true,
+                config = { flags = {} },
+                diagnosticsOn = true,
+            },
+
+            importLens = {
+                codeActionsOn = true,
+                codeLensOn = true,
+                inlayHintsOn = true,
+            },
+
+            moduleName = { globalOn = true },
+            ormolu = { config = { external = false } },
+
+            ["overloaded-record-dot"] = { globalOn = true },
+
+            ["pragmas-completion"] = { globalOn = true },
+            ["pragmas-disable"] = { globalOn = true },
+            ["pragmas-suggest"] = { globalOn = true },
+
+            qualifyImportedNames = { globalOn = true },
+
+            rename = {
+                config = { crossModule = false },
+                globalOn = true,
+            },
+
+            retrie = { globalOn = true },
+
+            semanticTokens = {
+                config = {
+                    classMethodToken = "method",
+                    classToken = "class",
+                    dataConstructorToken = "enumMember",
+                    functionToken = "function",
+                    moduleToken = "namespace",
+                    operatorToken = "operator",
+                    patternSynonymToken = "macro",
+                    recordFieldToken = "property",
+                    typeConstructorToken = "enum",
+                    typeFamilyToken = "interface",
+                    typeSynonymToken = "type",
+                    typeVariableToken = "typeParameter",
+                    variableToken = "variable",
+                },
+                globalOn = true,
+            },
+
+            splice = { globalOn = true },
+            stan = { globalOn = false },
+        },
+
+        sessionLoading = "singleComponent",
+    },
+}
 
 ---------------------------------------------------------------
 -- LSP keybindings (YouCompleteMe style)
@@ -198,60 +313,28 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "lua_ls", "pyright", "clangd", "hls", "rust_analyzer" },
+    ensure_installed = { "lua_ls", "clangd", "hls", "rust_analyzer" },
     handlers = {
-        function(server_name)
-            local capabilities = require("cmp_nvim_lsp").default_capabilities()
+        function(server)
             local opts = { capabilities = capabilities }
 
-            -- Custom settings for Lua
-            if server_name == "lua_ls" then
+            if server == "lua_ls" then
                 opts.settings = {
                     Lua = {
                         diagnostics = { globals = { "vim" } },
                         workspace = { checkThirdParty = false },
                     },
                 }
+
+                if server == "hls" then
+                    opts.settings = hls_settings
+                end
             end
 
-            if server_name == "hls" then
-                opts.unknown_shit = 123
-                opts.settings = {
-                    haskell = {
-                        semanticTokens = {
-                            plugin = {
-                                config = {
-                                    classMethodToken = "method",
-                                    classToken = "class",
-                                    dataConstructorToken = "enumMember",
-                                    functionToken = "function",
-                                    moduleToken = "namespace",
-                                    operatorToken = "operator",
-                                    patternSynonymToken = "macro",
-                                    recordFieldToken = "property",
-                                    typeConstructorToken = "enum",
-                                    typeFamilyToken = "interface",
-                                    typeSynonymToken = "type",
-                                    typeVariableToken = "typeParameter",
-                                    variableToken = "variable",
-                                },
-                                globalOn = true,
-                            },
-                        },
-                    },
-                }
-            end
-
-            -- New Neovim 0.11+ API
-            -- vim.lsp.start(vim.lsp.config[server_name].make_config(vim.tbl_extend("keep", opts, { on_attach = on_attach_non_existent_wtd })))
-            -- vim.lsp.start(vim.lsp.config[server_name].make_config(opts))
-            vim.lsp.start({
-                name = server_name,
-                cmd = require("mason-lspconfig").get_server_cmd(server_name),
-                capabilities = opts.capabilities,
-                settings = opts.settings,
-            })
-        end
+            vim.lsp.start(
+                vim.lsp.config[server].make_config(opts)
+            )
+        end,
     },
 })
 
@@ -299,12 +382,14 @@ cmp.setup({
 -- Treesitter setup
 -----------------------------------------------------------
 require("nvim-treesitter.configs").setup({
-    ensure_installed = { "lua", "python", "cpp", "bash", "json" },
+    ensure_installed = { "lua", "python", "cpp", "bash", "json", "haskell" },
     highlight = { enable = true },
+    indent = { enable = true, },
 })
 
 vim.diagnostic.config({
     virtual_text = false,
+    underline = true,
     signs = true,
     inderline = true,
     update_in_insert = false,
