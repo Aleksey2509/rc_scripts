@@ -29,6 +29,10 @@ require("lazy").setup({
     { "hrsh7th/cmp-nvim-lua" },
     { "L3MON4D3/LuaSnip" },
 
+    -- debug
+    { 'mfussenegger/nvim-dap' },
+    { "jay-babu/mason-nvim-dap.nvim" },
+
     -- Syntax highlighting
     { "nvim-treesitter/nvim-treesitter",  build = ":TSUpdate" },
 
@@ -125,6 +129,7 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities()
 -----------------------------------------------------------
 -- Colorscheme
 -----------------------------------------------------------
+vim.g.codedark_transparent = 1
 vim.cmd([[colorscheme codedark]])
 
 -----------------------------------------------------------
@@ -337,6 +342,173 @@ require("mason-lspconfig").setup({
         end,
     },
 })
+require("mason-nvim-dap").setup(
+    {
+        ensure_installed = { "cppdbg" },
+        automatic_installation = true,
+        handlers = {
+            function(config)
+                require("mason-nvim-dap").default_setup(config)
+            end,
+        },
+    }
+)
+require("dap").configurations = {
+    c = {
+        {
+            name = "Launch file",
+            type = "cppdbg",
+            request = "launch",
+            program = function()
+                return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            cwd = "${workspaceFolder}",
+            stopAtEntry = true,
+            MIMode = "gdb",
+        },
+        {
+            name = "Attach to gdbserver :1234",
+            type = "cppdbg",
+            request = "launch",
+            MIMode = "gdb",
+            miDebuggerServerAddress = "localhost:1234",
+            miDebuggerPath = "/usr/bin/gdb",
+            cwd = "${workspaceFolder}",
+            program = function()
+                return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            end,
+        },
+    },
+}
+
+vim.keymap.set('n', "\\db",
+    function()
+        require("dap").toggle_breakpoint()
+    end,
+    {
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\dc",
+    function()
+        require("dap").continue()
+    end,
+    {
+        desc = "Continue",
+        nowait = true,
+        remap = false,
+    })
+
+vim.keymap.set(
+    'n',
+    "\\ds",
+    function()
+        require("dap").step_into()
+    end,
+    {
+        desc = "Step Into",
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\dn",
+    function()
+        require("dap").step_over()
+    end,
+    {
+        desc = "Step Over",
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\df",
+    function()
+        require("dap").step_out()
+    end,
+    {
+        desc = "Step Out",
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\do",
+    function()
+        require("dap").repl.open()
+    end,
+    {
+        desc = "Open REPL",
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\dr",
+    function()
+        require("dap").run_last()
+    end,
+    {
+        desc = "Run Last",
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\dq",
+    function()
+        require("dap").terminate()
+        -- require("dapui").close()
+        -- require("nvim-dap-virtual-text").toggle()
+    end,
+    {
+        desc = "Terminate",
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\dl",
+    function()
+        require("dap").list_breakpoints()
+    end,
+    {
+        desc = "List Breakpoints",
+        nowait = true,
+        remap = false,
+    }
+)
+vim.keymap.set(
+    'n',
+    "\\de",
+    function()
+        require("dap").set_exception_breakpoints({ "all" })
+    end,
+    {
+        desc = "Set Exception Breakpoints",
+        nowait = true,
+        remap = false,
+    }
+)
+
+vim.keymap.set("n", "\\s", "", {
+    callback = function()
+        vim.o.hlsearch = not vim.o.hlsearch
+    end,
+    noremap = true,
+    silent = true,
+    desc = "Toggle hlsearch mode.",
+})
 
 ---------------------------------------------------------------
 -- LSP colors
@@ -350,12 +522,14 @@ vim.api.nvim_set_hl(0, "@keyword", { link = "Macro" })
 vim.api.nvim_set_hl(0, "@keyword.modifier.cpp", { link = "Type" })
 vim.api.nvim_set_hl(0, "@keyword.type", { link = "Type" })
 vim.api.nvim_set_hl(0, "@keyword.operator.cpp", { link = "Macro" })
+vim.api.nvim_set_hl(0, "@constant.macro", { link = "Macro" })
 vim.api.nvim_set_hl(0, "@lsp.type.concept", { link = "@type" })
 vim.api.nvim_set_hl(0, "@lsp.type.class", { link = "@type" })
 vim.api.nvim_set_hl(0, "@lsp.type.namespace", { link = "@type" })
 vim.api.nvim_set_hl(0, "@lsp.type.function", { link = "Function" })
 vim.api.nvim_set_hl(0, "@lsp.type.label", { link = "Macro" })
 vim.api.nvim_set_hl(0, "@lsp.type.operator", { link = "Function" })
+vim.api.nvim_set_hl(0, "@lsp.type.macro.cpp", { link = "Macro" })
 
 -----------------------------------------------------------
 -- nvim-cmp setup
@@ -382,7 +556,7 @@ cmp.setup({
 -- Treesitter setup
 -----------------------------------------------------------
 require("nvim-treesitter.configs").setup({
-    ensure_installed = { "lua", "python", "cpp", "bash", "json", "haskell" },
+    ensure_installed = { "lua", "python", "cpp", "bash", "json", "haskell", "cmake" },
     highlight = { enable = true },
     indent = { enable = true, },
 })
@@ -426,3 +600,13 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorMoved" }, {
 require("lualine").setup({
     options = { theme = "codedark", section_separators = "", component_separators = "" },
 })
+
+-- Folding powered by Treesitter
+vim.o.foldenable = true
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldlevel = 0
+vim.opt.foldlevelstart = 0
+
+vim.opt.cursorline = true
+vim.opt.cursorlineopt = "number"
