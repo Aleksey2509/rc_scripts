@@ -258,6 +258,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
         local client = vim.lsp.get_client_by_id(args.data.client_id)
         local bufnr = args.buf
 
+        if client and client.server_capabilities.inlayHintProvider then
+            vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+        end
         -- Keybindings
         local opts = { buffer = bufnr }
 
@@ -277,6 +280,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 if query then vim.lsp.buf.workspace_symbol(query) end
             end)
         end, opts)
+
+        vim.api.nvim_create_user_command("LspDiags", function()
+            vim.diagnostic.setqflist()
+        end, {})
 
         -- Code actions
         vim.keymap.set('n', '\\f', vim.lsp.buf.code_action, opts)
@@ -381,7 +388,7 @@ require("dap").configurations = {
     },
 }
 
-vim.keymap.set('n', "\\db",
+vim.keymap.set('n', "\\mb",
     function()
         require("dap").toggle_breakpoint()
     end,
@@ -392,7 +399,7 @@ vim.keymap.set('n', "\\db",
 )
 vim.keymap.set(
     'n',
-    "\\dc",
+    "\\mc",
     function()
         require("dap").continue()
     end,
@@ -404,7 +411,7 @@ vim.keymap.set(
 
 vim.keymap.set(
     'n',
-    "\\ds",
+    "\\ms",
     function()
         require("dap").step_into()
     end,
@@ -416,7 +423,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
     'n',
-    "\\dn",
+    "\\mn",
     function()
         require("dap").step_over()
     end,
@@ -428,7 +435,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
     'n',
-    "\\df",
+    "\\mf",
     function()
         require("dap").step_out()
     end,
@@ -440,7 +447,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
     'n',
-    "\\do",
+    "\\mo",
     function()
         require("dap").repl.open()
     end,
@@ -452,7 +459,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
     'n',
-    "\\dr",
+    "\\mr",
     function()
         require("dap").run_last()
     end,
@@ -464,7 +471,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
     'n',
-    "\\dq",
+    "\\mq",
     function()
         require("dap").terminate()
         -- require("dapui").close()
@@ -478,7 +485,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
     'n',
-    "\\dl",
+    "\\ml",
     function()
         require("dap").list_breakpoints()
     end,
@@ -490,7 +497,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
     'n',
-    "\\de",
+    "\\me",
     function()
         require("dap").set_exception_breakpoints({ "all" })
     end,
@@ -530,6 +537,7 @@ vim.api.nvim_set_hl(0, "@lsp.type.function", { link = "Function" })
 vim.api.nvim_set_hl(0, "@lsp.type.label", { link = "Macro" })
 vim.api.nvim_set_hl(0, "@lsp.type.operator", { link = "Function" })
 vim.api.nvim_set_hl(0, "@lsp.type.macro.cpp", { link = "Macro" })
+vim.api.nvim_set_hl(0, "@lsp.type.modifier.cpp", { link = "Macro" })
 
 -----------------------------------------------------------
 -- nvim-cmp setup
@@ -563,6 +571,7 @@ require("nvim-treesitter.configs").setup({
 
 vim.diagnostic.config({
     virtual_text = false,
+    virtual_lines = false,
     underline = true,
     signs = true,
     inderline = true,
@@ -570,6 +579,88 @@ vim.diagnostic.config({
     severity_sort = true,
 })
 
+-- Get the window id for a buffer
+-- @param bufnr integer
+local function buf_to_win(bufnr)
+  local current_win = vim.fn.win_getid()
+
+  -- Check if current window has the buffer
+  if vim.fn.winbufnr(current_win) == bufnr then
+    return current_win
+  end
+
+  -- Otherwise, find a visible window with this buffer
+  local win_ids = vim.fn.win_findbuf(bufnr)
+  local current_tabpage = vim.fn.tabpagenr()
+
+  for _, win_id in ipairs(win_ids) do
+    if vim.fn.win_id2tabwin(win_id)[1] == current_tabpage then
+      return win_id
+    end
+  end
+
+  return 0
+end
+
+-- Split a string into multiple lines, each no longer than max_width
+-- The split will only occur on spaces to preserve readability
+-- @param str string
+-- @param max_width integer
+local function split_line(str, max_width)
+  if #str <= max_width then
+    return { str }
+  end
+
+  local lines = {}
+  local current_line = ''
+
+  for word in string.gmatch(str, '%S+') do
+    -- If adding this word would exceed max_width
+    if #current_line + #word + 1 > max_width then
+      -- Add the current line to our results
+      table.insert(lines, current_line)
+      current_line = word
+    else
+      -- Add word to the current line with a space if needed
+      if current_line ~= '' then
+        current_line = current_line .. ' ' .. word
+      else
+        current_line = word
+      end
+    end
+  end
+
+  -- Don't forget the last line
+  if current_line ~= '' then
+    table.insert(lines, current_line)
+  end
+
+  return lines
+end
+
+---@param diagnostic vim.Diagnostic
+local function virtual_lines_format(diagnostic)
+  -- Only render hints on the current line
+  -- Note this MUST be paired with an autocmd that hides/shows diagnostics to force a re-render
+  if diagnostic.severity == vim.diagnostic.severity.HINT and diagnostic.lnum + 1 ~= vim.fn.line '.' then
+    return nil
+  end
+
+  local win = buf_to_win(diagnostic.bufnr)
+  local sign_column_width = vim.fn.getwininfo(win)[1].textoff
+  local text_area_width = vim.api.nvim_win_get_width(win) - sign_column_width
+  local center_width = 5
+  local left_width = 1
+
+  ---@type string[]
+  local lines = {}
+  for msg_line in diagnostic.message:gmatch '([^\n]+)' do
+    local max_width = text_area_width - diagnostic.col - center_width - left_width
+    vim.list_extend(lines, split_line(msg_line, max_width))
+  end
+
+  return table.concat(lines, '\n')
+end
 local ns = vim.api.nvim_create_namespace("CurrentLineDiagnostics")
 
 local function show_line_diagnostics()
@@ -583,7 +674,8 @@ local function show_line_diagnostics()
     end
 
     vim.diagnostic.show(ns, bufnr, diagnostics, {
-        virtual_text = {
+        virtual_lines = {
+            format = virtual_lines_format,
             prefix = "⚠",
             spacing = 4,
         },
@@ -594,6 +686,25 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorMoved" }, {
     callback = show_line_diagnostics,
 })
 
+-- Function to disable diagnostics (hide all visual aspects)
+local function disable_diagnostics_visuals()
+    vim.diagnostic.hide(ns)
+end
+
+-- Function to re-enable diagnostics (with your preferred settings)
+local function enable_diagnostics_visuals()
+    show_line_diagnostics()
+end
+
+-- Autocmd to toggle diagnostics on InsertEnter and InsertLeave events
+vim.api.nvim_create_autocmd("InsertEnter", {
+    callback = disable_diagnostics_visuals,
+})
+
+vim.api.nvim_create_autocmd("InsertLeave", {
+    callback = enable_diagnostics_visuals,
+})
+
 -----------------------------------------------------------
 -- Lualine setup
 -----------------------------------------------------------
@@ -601,6 +712,7 @@ require("lualine").setup({
     options = { theme = "codedark", section_separators = "", component_separators = "" },
 })
 
+vim.opt.mousescroll = "ver:0,hor:0"
 -- Folding powered by Treesitter
 vim.o.foldenable = true
 vim.o.foldmethod = "expr"
