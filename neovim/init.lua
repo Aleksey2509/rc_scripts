@@ -70,7 +70,6 @@ vim.opt.fileencoding = "utf-8"
 -----------------------------------------------------------
 vim.opt.autoindent = true
 vim.opt.smartindent = true
-vim.opt.foldmethod = "syntax"
 
 -- Tabs and spaces
 vim.opt.tabstop = 4
@@ -719,6 +718,45 @@ vim.o.foldmethod = "expr"
 vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldlevel = 0
 vim.opt.foldlevelstart = 0
+
+vim.opt.shortmess:remove("A")
+
+vim.api.nvim_create_autocmd("SwapExists", {
+  callback = function()
+    vim.cmd("redraw")
+
+    local msg = table.concat({
+      "Swap file already exists!",
+      "",
+      "(O)pen Read-Only",
+      "(E)dit anyway",
+      "(R)ecover",
+      "(D)elete swap",
+      "(Q)uit",
+      "(A)bort",
+      "",
+      "Choose: ",
+    }, "\n")
+
+    local choice = vim.fn.input(msg)
+
+    choice = choice:lower()
+
+    if choice == "o" then
+      vim.v.swapchoice = "o"
+    elseif choice == "e" then
+      vim.v.swapchoice = "e"
+    elseif choice == "r" then
+      vim.v.swapchoice = "r"
+    elseif choice == "d" then
+      vim.v.swapchoice = "d"
+    elseif choice == "q" then
+      vim.v.swapchoice = "q"
+    else
+      vim.v.swapchoice = "a"
+    end
+  end,
+})
 
 vim.opt.cursorline = true
 vim.opt.cursorlineopt = "number"
