@@ -1,0 +1,1 @@
+CC=gcc-16 CXX=g++-16 CFLAGS="-march=native -O3 -DNDEBUG -flto" CXXFLAGS="-march=native -O3 -DNDEBUG -flto" LDFLAGS="-flto" ./configure --with-features=huge --enable-python3interp --enable-luainterp --enable-perlinterp --enable-rubyinterp --enable-tclinterp --enable-cscope --enable-mzschemeinterp --enable-socketserver
