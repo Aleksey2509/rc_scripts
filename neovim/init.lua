@@ -310,7 +310,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
 
         -- You can map this function to a keybinding for easy access
-        vim.keymap.set('n', '\\st', GetSemanticTokenUnderCursor, { desc = "Get Semantic Token under cursor" })
+        -- vim.keymap.set('n', '\\st', GetSemanticTokenUnderCursor, { desc = "Get Semantic Token under cursor" })
 
         -- Diagnostics
         vim.keymap.set('n', '\\H', vim.diagnostic.open_float, opts)
@@ -703,6 +703,21 @@ vim.api.nvim_create_autocmd("InsertEnter", {
 vim.api.nvim_create_autocmd("InsertLeave", {
     callback = enable_diagnostics_visuals,
 })
+
+-- global diagnostics toggle
+vim.g.diagnostics_enabled = true
+
+vim.keymap.set("n", "\\e", function()
+  vim.g.diagnostics_enabled = not vim.g.diagnostics_enabled
+
+  if vim.g.diagnostics_enabled then
+    vim.diagnostic.enable()
+    print("Diagnostics enabled")
+  else
+    vim.diagnostic.disable()
+    print("Diagnostics disabled")
+  end
+end, { desc = "Toggle diagnostics" })
 
 -----------------------------------------------------------
 -- Lualine setup
