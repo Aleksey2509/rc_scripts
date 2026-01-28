@@ -716,8 +716,14 @@ vim.opt.mousescroll = "ver:0,hor:0"
 vim.o.foldenable = true
 vim.o.foldmethod = "expr"
 vim.o.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldlevel = 0
-vim.opt.foldlevelstart = 0
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+-- close all folds once, on file open
+vim.api.nvim_create_autocmd("BufReadPost", {
+  callback = function()
+    vim.cmd("normal! zM")
+  end,
+})
 
 vim.opt.shortmess:remove("A")
 
