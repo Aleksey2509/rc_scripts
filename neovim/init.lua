@@ -28,15 +28,29 @@ require("lazy").setup({
     { "hrsh7th/cmp-path" },
     { "hrsh7th/cmp-nvim-lua" },
     { "L3MON4D3/LuaSnip" },
+    {
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        ---@type snacks.Config
+        opts = {
+            -- your configuration comes here
+            -- or leave it empty to use the default settings
+            -- refer to the configuration section below
+            bigfile = {
+            },
+        },
+    },
 
     -- debug
     { 'mfussenegger/nvim-dap' },
     { "jay-babu/mason-nvim-dap.nvim" },
 
     -- Syntax highlighting
-    { "nvim-treesitter/nvim-treesitter",  build = ":TSUpdate" },
+    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 
     { "tpope/vim-surround" },
+    { "llvm/llvm.vim" },
     -- UI
     { "nvim-lualine/lualine.nvim" },
     { "Aleksey2509/vim-code-dark-fork" },
@@ -321,8 +335,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- LSP setup
 -----------------------------------------------------------
 
-
-require("mason").setup()
+require("mason").setup({
+    -- PATH = function()
+    --     if vim.fn.isdirectory("/home/lexotr/ssd_mount/llvm_fun") then
+    --         return "append"
+    --     else
+    --         return "prepend"
+    --     end
+    -- end,
+})
 require("mason-lspconfig").setup({
     ensure_installed = { "lua_ls", "clangd", "hls", "rust_analyzer" },
     handlers = {
@@ -550,7 +571,7 @@ cmp.setup({
     },
     mapping = cmp.mapping.preset.insert({
         ["<C-Space>"] = cmp.mapping.complete(),
-        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        ["<CR>"] = cmp.mapping.confirm({ select = false }),
         ["<Tab>"] = cmp.mapping.select_next_item(),
         ["<S-Tab>"] = cmp.mapping.select_prev_item(),
     }),
@@ -581,24 +602,24 @@ vim.diagnostic.config({
 -- Get the window id for a buffer
 -- @param bufnr integer
 local function buf_to_win(bufnr)
-  local current_win = vim.fn.win_getid()
+    local current_win = vim.fn.win_getid()
 
-  -- Check if current window has the buffer
-  if vim.fn.winbufnr(current_win) == bufnr then
-    return current_win
-  end
-
-  -- Otherwise, find a visible window with this buffer
-  local win_ids = vim.fn.win_findbuf(bufnr)
-  local current_tabpage = vim.fn.tabpagenr()
-
-  for _, win_id in ipairs(win_ids) do
-    if vim.fn.win_id2tabwin(win_id)[1] == current_tabpage then
-      return win_id
+    -- Check if current window has the buffer
+    if vim.fn.winbufnr(current_win) == bufnr then
+        return current_win
     end
-  end
 
-  return 0
+    -- Otherwise, find a visible window with this buffer
+    local win_ids = vim.fn.win_findbuf(bufnr)
+    local current_tabpage = vim.fn.tabpagenr()
+
+    for _, win_id in ipairs(win_ids) do
+        if vim.fn.win_id2tabwin(win_id)[1] == current_tabpage then
+            return win_id
+        end
+    end
+
+    return 0
 end
 
 -- Split a string into multiple lines, each no longer than max_width
@@ -606,61 +627,65 @@ end
 -- @param str string
 -- @param max_width integer
 local function split_line(str, max_width)
-  if #str <= max_width then
-    return { str }
-  end
-
-  local lines = {}
-  local current_line = ''
-
-  for word in string.gmatch(str, '%S+') do
-    -- If adding this word would exceed max_width
-    if #current_line + #word + 1 > max_width then
-      -- Add the current line to our results
-      table.insert(lines, current_line)
-      current_line = word
-    else
-      -- Add word to the current line with a space if needed
-      if current_line ~= '' then
-        current_line = current_line .. ' ' .. word
-      else
-        current_line = word
-      end
+    if #str <= max_width then
+        return { str }
     end
-  end
 
-  -- Don't forget the last line
-  if current_line ~= '' then
-    table.insert(lines, current_line)
-  end
+    local lines = {}
+    local current_line = ''
 
-  return lines
+    for word in string.gmatch(str, '%S+') do
+        -- If adding this word would exceed max_width
+        if #current_line + #word + 1 > max_width then
+            -- Add the current line to our results
+            table.insert(lines, current_line)
+            current_line = word
+        else
+            -- Add word to the current line with a space if needed
+            if current_line ~= '' then
+                current_line = current_line .. ' ' .. word
+            else
+                current_line = word
+            end
+        end
+    end
+
+    -- Don't forget the last line
+    if current_line ~= '' then
+        table.insert(lines, current_line)
+    end
+
+    return lines
 end
 
 ---@param diagnostic vim.Diagnostic
 local function virtual_lines_format(diagnostic)
-  -- Only render hints on the current line
-  -- Note this MUST be paired with an autocmd that hides/shows diagnostics to force a re-render
-  if diagnostic.severity == vim.diagnostic.severity.HINT and diagnostic.lnum + 1 ~= vim.fn.line '.' then
-    return nil
-  end
+    -- Only render hints on the current line
+    -- Note this MUST be paired with an autocmd that hides/shows diagnostics to force a re-render
+    if diagnostic.severity == vim.diagnostic.severity.HINT and diagnostic.lnum + 1 ~= vim.fn.line '.' then
+        return nil
+    end
 
-  local win = buf_to_win(diagnostic.bufnr)
-  local sign_column_width = vim.fn.getwininfo(win)[1].textoff
-  local text_area_width = vim.api.nvim_win_get_width(win) - sign_column_width
-  local center_width = 5
-  local left_width = 1
+    local win = buf_to_win(diagnostic.bufnr)
+    local sign_column_width = vim.fn.getwininfo(win)[1].textoff
+    local text_area_width = vim.api.nvim_win_get_width(win) - sign_column_width
+    local center_width = 5
+    local left_width = 1
 
-  ---@type string[]
-  local lines = {}
-  for msg_line in diagnostic.message:gmatch '([^\n]+)' do
-    local max_width = text_area_width - diagnostic.col - center_width - left_width
-    vim.list_extend(lines, split_line(msg_line, max_width))
-  end
+    ---@type string[]
+    local lines = {}
+    for msg_line in diagnostic.message:gmatch '([^\n]+)' do
+        local max_width = text_area_width - diagnostic.col - center_width - left_width
+        vim.list_extend(lines, split_line(msg_line, max_width))
+    end
 
-  return table.concat(lines, '\n')
+    return table.concat(lines, '\n')
 end
 local ns = vim.api.nvim_create_namespace("CurrentLineDiagnostics")
+
+vim.api.nvim_create_user_command("Black", function()
+    vim.cmd("!black %")
+end, {})
 
 local function show_line_diagnostics()
     vim.diagnostic.hide(ns)
@@ -708,15 +733,15 @@ vim.api.nvim_create_autocmd("InsertLeave", {
 vim.g.diagnostics_enabled = true
 
 vim.keymap.set("n", "\\e", function()
-  vim.g.diagnostics_enabled = not vim.g.diagnostics_enabled
+    vim.g.diagnostics_enabled = not vim.g.diagnostics_enabled
 
-  if vim.g.diagnostics_enabled then
-    vim.diagnostic.enable()
-    print("Diagnostics enabled")
-  else
-    vim.diagnostic.disable()
-    print("Diagnostics disabled")
-  end
+    if vim.g.diagnostics_enabled then
+        vim.diagnostic.enable()
+        print("Diagnostics enabled")
+    else
+        vim.diagnostic.disable()
+        print("Diagnostics disabled")
+    end
 end, { desc = "Toggle diagnostics" })
 
 -----------------------------------------------------------
@@ -735,48 +760,48 @@ vim.opt.foldlevel = 99
 vim.opt.foldlevelstart = 99
 -- close all folds once, on file open
 vim.api.nvim_create_autocmd("BufReadPost", {
-  callback = function()
-    vim.cmd("normal! zM")
-  end,
+    callback = function()
+        vim.cmd("normal! zM")
+    end,
 })
 
 vim.opt.shortmess:remove("A")
 
 vim.api.nvim_create_autocmd("SwapExists", {
-  callback = function()
-    vim.cmd("redraw")
+    callback = function()
+        vim.cmd("redraw")
 
-    local msg = table.concat({
-      "Swap file already exists!",
-      "",
-      "(O)pen Read-Only",
-      "(E)dit anyway",
-      "(R)ecover",
-      "(D)elete swap",
-      "(Q)uit",
-      "(A)bort",
-      "",
-      "Choose: ",
-    }, "\n")
+        local msg = table.concat({
+            "Swap file already exists!",
+            "",
+            "(O)pen Read-Only",
+            "(E)dit anyway",
+            "(R)ecover",
+            "(D)elete swap",
+            "(Q)uit",
+            "(A)bort",
+            "",
+            "Choose: ",
+        }, "\n")
 
-    local choice = vim.fn.input(msg)
+        local choice = vim.fn.input(msg)
 
-    choice = choice:lower()
+        choice = choice:lower()
 
-    if choice == "o" then
-      vim.v.swapchoice = "o"
-    elseif choice == "e" then
-      vim.v.swapchoice = "e"
-    elseif choice == "r" then
-      vim.v.swapchoice = "r"
-    elseif choice == "d" then
-      vim.v.swapchoice = "d"
-    elseif choice == "q" then
-      vim.v.swapchoice = "q"
-    else
-      vim.v.swapchoice = "a"
-    end
-  end,
+        if choice == "o" then
+            vim.v.swapchoice = "o"
+        elseif choice == "e" then
+            vim.v.swapchoice = "e"
+        elseif choice == "r" then
+            vim.v.swapchoice = "r"
+        elseif choice == "d" then
+            vim.v.swapchoice = "d"
+        elseif choice == "q" then
+            vim.v.swapchoice = "q"
+        else
+            vim.v.swapchoice = "a"
+        end
+    end,
 })
 
 vim.opt.cursorline = true
