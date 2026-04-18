@@ -28,26 +28,14 @@ require("lazy").setup({
     { "hrsh7th/cmp-path" },
     { "hrsh7th/cmp-nvim-lua" },
     { "L3MON4D3/LuaSnip" },
-    {
-        "folke/snacks.nvim",
-        priority = 1000,
-        lazy = false,
-        ---@type snacks.Config
-        opts = {
-            -- your configuration comes here
-            -- or leave it empty to use the default settings
-            -- refer to the configuration section below
-            bigfile = {
-            },
-        },
-    },
+    { "LunarVim/bigfile.nvim" },
 
     -- debug
     { 'mfussenegger/nvim-dap' },
     { "jay-babu/mason-nvim-dap.nvim" },
 
     -- Syntax highlighting
-    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "main" },
 
     { "tpope/vim-surround" },
     { "llvm/llvm.vim" },
@@ -84,6 +72,7 @@ vim.opt.fileencoding = "utf-8"
 -----------------------------------------------------------
 vim.opt.autoindent = true
 vim.opt.smartindent = true
+vim.opt.modeline = false
 
 -- Tabs and spaces
 vim.opt.tabstop = 4
@@ -331,6 +320,18 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
+-- default config
+require("bigfile").setup {
+    filesize = 2,      -- size of the file in MiB, the plugin round file sizes to the closest MiB
+    pattern = { "*" }, -- autocmd pattern or function see <### Overriding the detection of big files>
+    features = {       -- features to disable
+        "indent_blankline",
+        "lsp",
+        "treesitter",
+        "syntax",
+    },
+}
+
 ---------------------------------------------------------------
 -- LSP setup
 -----------------------------------------------------------
@@ -345,30 +346,21 @@ require("mason").setup({
     -- end,
 })
 require("mason-lspconfig").setup({
-    ensure_installed = { "lua_ls", "clangd", "hls", "rust_analyzer" },
-    handlers = {
-        function(server)
-            local opts = { capabilities = capabilities }
-
-            if server == "lua_ls" then
-                opts.settings = {
-                    Lua = {
-                        diagnostics = { globals = { "vim" } },
-                        workspace = { checkThirdParty = false },
-                    },
-                }
-
-                if server == "hls" then
-                    opts.settings = hls_settings
-                end
-            end
-
-            vim.lsp.start(
-                vim.lsp.config[server].make_config(opts)
-            )
-        end,
-    },
+    ensure_installed = { "lua_ls", "clangd", "hls" },
 })
+
+
+vim.lsp.config("lua_ls", {
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            diagnostics = { globals = { "vim" } },
+            workspace = { checkThirdParty = false },
+        },
+    }
+})
+vim.lsp.config("hls", { capabilities = capabilities, settings = hls_settings })
+
 require("mason-nvim-dap").setup(
     {
         ensure_installed = { "cppdbg" },
@@ -580,14 +572,16 @@ cmp.setup({
     },
 })
 
+
+local function file_too_big()
+    local file_path = vim.fn.expand('%:p')
+    return vim.fn.getfsize(file_path)
+end
 -----------------------------------------------------------
 -- Treesitter setup
 -----------------------------------------------------------
-require("nvim-treesitter.configs").setup({
-    ensure_installed = { "lua", "python", "cpp", "bash", "json", "haskell", "cmake" },
-    highlight = { enable = true },
-    indent = { enable = true, },
-})
+
+require("nvim-treesitter").install({ "lua", "python", "cpp", "bash", "json", "disassembly", "haskell", "cmake" })
 
 vim.diagnostic.config({
     virtual_text = false,
@@ -684,6 +678,7 @@ end
 local ns = vim.api.nvim_create_namespace("CurrentLineDiagnostics")
 
 vim.api.nvim_create_user_command("Black", function()
+    vim.cmd(":w")
     vim.cmd("!black %")
 end, {})
 
@@ -753,14 +748,29 @@ require("lualine").setup({
 
 vim.opt.mousescroll = "ver:0,hor:0"
 -- Folding powered by Treesitter
-vim.o.foldenable = true
-vim.o.foldmethod = "expr"
-vim.o.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldlevel = 99
-vim.opt.foldlevelstart = 99
+if file_too_big() then
+    vim.o.foldenable = false
+else
+    vim.o.foldenable = true
+    vim.o.foldmethod = "expr"
+    vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+    vim.opt.foldlevel = 99
+    vim.opt.foldlevelstart = 99
+end
 -- close all folds once, on file open
 vim.api.nvim_create_autocmd("BufReadPost", {
     callback = function()
+        local file_path = vim.fn.expand('%:p')
+        local file_size_bytes = vim.fn.getfsize(file_path)
+
+        if file_size_bytes > (1024 * 1024) then
+            return
+        end
+        -- vim.opt.foldlevel = 0
+        -- vim.opt.foldlevelstart = 0
+        vim.cmd("normal! zM")
+        vim.opt.foldlevel = 99
+        vim.opt.foldlevelstart = 99
         vim.cmd("normal! zM")
     end,
 })
