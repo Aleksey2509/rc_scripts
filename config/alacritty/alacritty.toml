@@ -1,0 +1,25 @@
+[colors.primary]
+background = "#000000"
+
+[general]
+import = ["~/.config/alacritty/themes/themes/gnome_terminal.toml"]
+
+
+[font]
+size = 15
+
+[font.normal]
+family = "Cascadia Mono PL"
+style = "Regular"
+
+[font.bold]
+family = "Cascadia Mono PL"
+style = "Bold"
+
+[font.italic]
+family = "Cascadia Mono PL"
+style = "Italic"
+
+[font.bold_italic]
+family = "Cascadia Mono PL"
+style = "Bold Italic"
